@@ -214,6 +214,14 @@
             window.location.href = '/auth';
         });
 
+        document.getElementById('connect-discord').addEventListener('click', () => {
+            window.location.href = '/auth';
+        });
+
+        if (window.location.search.includes('code=')) {
+        fetchDiscordData();
+        }
+
         async function fetchDiscordData() {
             const loading = document.querySelector('.loading');
             const error = document.querySelector('.error');
