@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spencer's Profile</title>
+    <title>Discord Profile</title>
     <style>
         @keyframes fireAnimation {
             0% { background-position: 0% 50%; }
@@ -153,6 +153,35 @@
             z-index: 9999;
             animation: float-cursor 3s infinite ease-in-out;
         }
+        .loading {
+            display: none;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .error {
+            color: #ff0000;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .guild-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .guild-item {
+            background-color: #222;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .guild-item:hover {
+            background-color: #333;
+        }
     </style>
 </head>
 <body>
@@ -160,20 +189,19 @@
     <div class="profile-container">
         <div class="banner"></div>
         <div class="avatar"></div>
-        <h1 class="username">Spencer</h1>
-        <span class="badge">Developer</span>
-        <p class="quote">"Only God can judge me" - Tupac</p>
+        <h1 class="username">Loading...</h1>
+        <span class="badge">Discord User</span>
+        <p class="quote">Connecting to Discord...</p>
         <div class="social-icons">
             <div class="social-icon"></div>
             <div class="social-icon"></div>
             <div class="social-icon"></div>
             <div class="social-icon"></div>
         </div>
-        <div class="group">
-            <h2>Demon</h2>
-            <p>23 Online • 155 Members</p>
-            <button class="join-button">Join</button>
-        </div>
+        <button id="connect-discord" class="join-button">Connect to Discord</button>
+        <div class="loading">Loading Discord data...</div>
+        <div class="error"></div>
+        <ul class="guild-list"></ul>
     </div>
 
     <script>
@@ -182,6 +210,54 @@
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
+        document.getElementById('connect-discord').addEventListener('click', () => {
+            window.location.href = '/auth';
+        });
+
+        async function fetchDiscordData() {
+            const loading = document.querySelector('.loading');
+            const error = document.querySelector('.error');
+            loading.style.display = 'block';
+            error.textContent = '';
+
+            try {
+                const response = await fetch('/callback' + window.location.search);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                updateProfile(data.user);
+                updateGuilds(data.guilds);
+            } catch (err) {
+                error.textContent = 'Error fetching Discord data: ' + err.message;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function updateProfile(user) {
+            document.querySelector('.username').textContent = user.username;
+            document.querySelector('.avatar').style.backgroundImage = `url(https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png)`;
+            document.querySelector('.quote').textContent = user.bio || 'No bio set';
+        }
+
+        function updateGuilds(guilds) {
+            const guildList = document.querySelector('.guild-list');
+            guildList.innerHTML = '';
+            guilds.forEach(guild => {
+                const li = document.createElement('li');
+                li.className = 'guild-item';
+                li.textContent = guild.name;
+                guildList.appendChild(li);
+            });
+        }
+
+        // Check if we're returning from Discord auth
+        if (window.location.search.includes('code=')) {
+            fetchDiscordData();
+        }
     </script>
 </body>
 </html>
