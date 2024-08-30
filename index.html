@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spencer's Profile</title>
     <style>
+        @keyframes fireAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
         body {
             background-color: #111;
             color: #ff0000;
@@ -14,29 +37,39 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
+
         .profile-container {
             text-align: center;
             width: 80%;
             max-width: 600px;
+            animation: fadeIn 1s ease-out;
         }
+
         .banner {
             height: 100px;
-            background-image: url('https://via.placeholder.com/600x100/ff4500/000000?text=Fire+Banner');
-            background-size: cover;
+            background-image: linear-gradient(45deg, #ff4500, #ff6347, #ff4500);
+            background-size: 200% 200%;
+            animation: fireAnimation 5s ease infinite;
             margin-bottom: 20px;
         }
+
         .avatar {
             width: 100px;
             height: 100px;
             border-radius: 50%;
             background-color: #333;
             margin: 0 auto 10px;
+            animation: pulse 2s infinite ease-in-out;
         }
+
         .username {
             font-size: 24px;
             margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
         }
+
         .badge {
             background-color: #ff0000;
             color: #fff;
@@ -44,29 +77,51 @@
             border-radius: 15px;
             display: inline-block;
             margin-bottom: 10px;
+            transition: transform 0.3s ease;
         }
+
+        .badge:hover {
+            transform: scale(1.1);
+        }
+
         .quote {
             font-style: italic;
             margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.5s forwards;
         }
+
         .social-icons {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-bottom: 20px;
         }
+
         .social-icon {
             width: 30px;
             height: 30px;
             background-color: #ff0000;
             border-radius: 50%;
+            transition: transform 0.3s ease;
         }
+
+        .social-icon:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+
         .group {
             background-color: #222;
             padding: 10px;
             border-radius: 5px;
             margin-top: 20px;
+            transition: box-shadow 0.3s ease;
         }
+
+        .group:hover {
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
         .join-button {
             background-color: #ff0000;
             color: #fff;
@@ -74,10 +129,34 @@
             padding: 5px 15px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .join-button:hover {
+            background-color: #ff3333;
+            transform: translateY(-2px);
+        }
+
+        @keyframes float-cursor {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(5px, 5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            animation: float-cursor 3s infinite ease-in-out;
         }
     </style>
 </head>
 <body>
+    <div class="custom-cursor"></div>
     <div class="profile-container">
         <div class="banner"></div>
         <div class="avatar"></div>
@@ -96,5 +175,13 @@
             <button class="join-button">Join</button>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.querySelector('.custom-cursor');
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+    </script>
 </body>
 </html>
